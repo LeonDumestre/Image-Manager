@@ -19,29 +19,35 @@ class ImagesController extends AppController
 
     public function listing()
     {
+        $request = $this->getRequest()->getQuery();
         $imagesArray = array();
-        foreach (glob(WWW_ROOT.'img/*.jpg') as $img)
-        {
-            $description = '';
-            if (isset(exif_read_data($img)["ImageDescription"]))
-                $comment = exif_read_data($img)["ImageDescription"];
+        foreach (glob(WWW_ROOT.'img/*.jpg') as $img) {
 
-            $comment = '';
-            if (isset(exif_read_data($img)["UserComment"]))
-                $comment = exif_read_data($img)["UserComment"];
+            if ((isset($request["limit"]) && count($imagesArray) < $request["limit"]) || !isset($request["limit"])) {
+                if ((isset($request["name"]) && str_contains(exif_read_data($img)["FileName"], $request["name"])) || !isset($request["name"])) {
 
-            $author = '';
-            if (isset(exif_read_data($img)["Artist"]))
-                $comment = exif_read_data($img)["Artist"];
+                    $description = '';
+                    if (isset(exif_read_data($img)["ImageDescription"]))
+                        $comment = exif_read_data($img)["ImageDescription"];
 
-            array_push($imagesArray, array(
-                "file" => exif_read_data($img)["FileName"],
-                "description" => $description,
-                "comment" => $comment,
-                "author" => $author,
-                "width" => exif_read_data($img)["ExifImageWidth"],
-                "height" => exif_read_data($img)["ExifImageLength"]
-            ));
+                    $comment = '';
+                    if (isset(exif_read_data($img)["UserComment"]))
+                        $comment = exif_read_data($img)["UserComment"];
+
+                    $author = '';
+                    if (isset(exif_read_data($img)["Artist"]))
+                        $comment = exif_read_data($img)["Artist"];
+
+                    array_push($imagesArray, array(
+                        "file" => exif_read_data($img)["FileName"],
+                        "description" => $description,
+                        "comment" => $comment,
+                        "author" => $author,
+                        "width" => exif_read_data($img)["ExifImageWidth"],
+                        "height" => exif_read_data($img)["ExifImageLength"]
+                    ));
+                }
+            }
         }
         return $this->response->withStringBody(json_encode($imagesArray, JSON_PRETTY_PRINT))->withType("application/json");
     }
