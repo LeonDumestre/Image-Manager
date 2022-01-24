@@ -14,13 +14,19 @@ class ImagesController extends AppController
         {
             array_push($imagesArray, $img);
         }
-        $json = json_encode($imagesArray);
-        dd($json);
+         return $this->response->withStringBody(json_encode($imagesArray))->withType("application/json");
     }
 
-    public function view($id)
+    public function picture($id)
     {
-
+        foreach (glob(WWW_ROOT.'img/*.jpg') as $img)
+        {
+            $fileName = exif_read_data($img)["FileName"];
+            if (substr($fileName, 0, strpos($fileName, '.')) == $id) {
+                return $this->response->withStringBody(json_encode(exif_read_data($img)))->withType("application/json");
+            }
+        }
+        return $this->response->withStringBody("L'image n'existe pas !");
     }
 
 }
