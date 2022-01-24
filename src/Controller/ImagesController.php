@@ -23,7 +23,10 @@ class ImagesController extends AppController
         $imagesArray = array();
         foreach (glob(WWW_ROOT.'img/*.jpg') as $img) {
 
-            if (substr(exif_read_data($img)["FileName"], 0, strpos(exif_read_data($img)["FileName"], '.')) == $name || $name == null) {
+            if (exif_read_data($img)["FileName"] == $name ||
+                substr(exif_read_data($img)["FileName"], 0, strpos(exif_read_data($img)["FileName"], '.')) == $name ||
+                $name == null)
+            {
                 if ((isset($request["limit"]) && count($imagesArray) < $request["limit"]) || !isset($request["limit"])) {
                     if ((isset($request["name"]) && str_contains(exif_read_data($img)["FileName"], $request["name"])) || !isset($request["name"])) {
 
@@ -51,9 +54,9 @@ class ImagesController extends AppController
                 }
             }
         }
-        if ($name != null && count($imagesArray) == 0) {
+        if ($name != null && count($imagesArray) == 0)
             return $this->response->withStatus(400);
-        }
+
         return $this->response->withStringBody(json_encode($imagesArray, JSON_PRETTY_PRINT))->withType("application/json");
     }
 
