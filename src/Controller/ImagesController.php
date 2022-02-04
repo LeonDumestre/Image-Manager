@@ -21,7 +21,6 @@ class ImagesController extends AppController
     {
         $request = $this->getRequest()->getQuery();
         $dataArray = array();
-        $imagesArray = array();
         foreach (glob(WWW_ROOT.'img/*.jpg') as $img) {
 
             if (exif_read_data($img)["FileName"] == $name ||
