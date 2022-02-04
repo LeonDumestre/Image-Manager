@@ -71,6 +71,11 @@ th {
     white-space: nowrap;
 }
 
+.next-button {
+    position: absolute;
+    right: 0;
+}
+
 /* Nav bar */
 .top-nav {
     display: flex;
