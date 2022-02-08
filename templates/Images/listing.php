@@ -27,9 +27,9 @@ $this->assign('title', 'Images - Listing');
                     <td>" . $item['description'] . "</td>
                     <td>" . $item['width'] . "</td>
                     <td>" . $item['height'] . "</td>
-                    <td><img src=\"/img/" . $item['name'] . "\" alt=\"" . $item['name'] . "\" width=150 height=auto></td>
-                    <td><a download=\"/img/" . $item['name'] . "\" href=\"/img/" . $item['name'] . "\" title=\"" . $item['name'] . "\">
-                        <img alt=\"icon_download\" src=\"/img/icon/icon_download.png\" width=25'></a>
+                    <td>" . $this->Html->image("/img/" . $item['name'], ["width" => "200px", "height" => "auto"]) . "</td>
+                    <td><a download=\"/img/" . $item['name'] . "\" href=\"/img/" . $item['name'] . "\" title=\"" . $item['name'] . "\">" .
+                         $this->Html->image("/img/icon_download.png", ["width" => "25px", "height" => "25px"]) . "</a>
                     </td>
                     <td>" . $this->Form->postLink(
                         "delete",
