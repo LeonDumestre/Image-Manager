@@ -56,7 +56,7 @@ return static function (RouteBuilder $routes) {
         /*
          * ...and connect the rest of 'Pages' controller's URLs.
          */
-        $builder->connect('/images/*', 'Images::display');
+        //$builder->connect('/images/*', 'Images::display');
 
         /*
          * Connect catchall routes for all controllers.
