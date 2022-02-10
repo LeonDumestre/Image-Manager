@@ -1,9 +1,15 @@
 <?php
 
-$this->assign('title', 'Images - Listing');
+$this->assign('title', 'Liste des images');
 
 /** @var array $images */
 /** @var int $page */
+
+
+ echo $this->Html->link(
+    "Ajouter une image",
+    ["Controller" => "Images", "action" => "add"],
+    ["escapeTitle" => false, "class" => "button"])
 ?>
 
 <table>
@@ -26,15 +32,16 @@ $this->assign('title', 'Images - Listing');
                     <td>" . $item['description'] . "</td>
                     <td>" . $item['width'] . "</td>
                     <td>" . $item['height'] . "</td>
-                    <td>" . $this->Html->image("/img/" . $item['name'], ["width" => "250px", "height" => "auto"]) . "</td>
-                    <td>" . $this->Html->link("<i class=\"fa-solid fa-download fa-2x fa-black\"></i>",
-                           "/img/" . $item['name'],
-                           ["escapeTitle" => false, "download" => "/img/" . $item['name']]) . "
+                    <td>" . $this->Html->image("/img/" . $item['name'], ["alt" => $item['name'], "width" => "250px", "height" => "auto"]) . "</td>
+                    <td class='center-item'>" . $this->Html->link(
+                        "<i class=\"fa-solid fa-download fa-2x fa-black\"></i>",
+                        "/img/" . $item['name'],
+                        ["escapeTitle" => false, "download" => "/img/" . $item['name']]) . "
                     </td>
-                    <td>" . $this->Form->postLink(
+                    <td class='center-item'>" . $this->Form->postLink(
                         "<i class=\"fa-solid fa-trash-can fa-2x fa-red\"></i>",
                         ["Controller" => "Images", "action" => "delete", $item['id']],
-                        ["escapeTitle" => false]) . "
+                        ["escapeTitle" => false, "confirm" => __("Etes-vous sûr de vouloir supprimer l'image {0} ?", $item['name'])]) . "
                     </td>
                 </tr>";
     ?>

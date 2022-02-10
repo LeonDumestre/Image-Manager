@@ -17,6 +17,7 @@ class ImagesController extends AppController
          return $this->response->withStringBody(json_encode($dataArray))->withType("application/json");
     }
 
+
     public function addAll()
     {
         $images = $this->Images
@@ -36,11 +37,41 @@ class ImagesController extends AppController
                 $image->width = exif_read_data($img)["ExifImageWidth"];
                 $image->height = exif_read_data($img)["ExifImageLength"];
 
-                if ($this->Images->save($image))
-                    $this->Flash->success("La base de données a été remplie avec succès !");
+                $this->Images->save($image);
             }
+            if (count($images) > 0)
+                $this->Flash->success("La base de données a été remplie avec succès !");
         }
     }
+
+
+    public function add()
+    {
+        $image = $this->Images->newEmptyEntity();
+        $this->set(compact('image'));
+
+        if (!empty($this->getRequest()->getData())) {
+            $data = $this->getRequest()->getData();
+
+            $fileData = $data["File"];
+            $fileData->moveTo(WWW_ROOT . "img/" . $fileData->getClientFileName());
+
+            $image->name = $fileData->getClientFileName();
+            $image->description = $data["Description"];
+
+            $imageSize = getimagesize(WWW_ROOT . "img/" . $fileData->getClientFileName());
+            $image->width = $imageSize[0];
+            $image->height = $imageSize[1];
+
+            if ($this->Images->save($image)) {
+                $this->Flash->success("L'image a été ajoutée avec succès !");
+            } else {
+                $this->Flash->error("Mince ! L'image n'a pas pu être ajoutée...");
+            }
+        }
+
+    }
+
 
     public function delete($id)
     {
@@ -50,10 +81,11 @@ class ImagesController extends AppController
         if ($this->Images->delete($image))
             $this->Flash->success("L'image a été supprimée avec succès !");
         else
-            $this->Flash->success("Mince ! L'image n'a pas pu être supprimée...");
+            $this->Flash->error("Mince ! L'image n'a pas pu être supprimée...");
 
         return $this->redirect($this->referer());
     }
+
 
     //TODO pagination à faire
     public function listing($args = null)
@@ -85,7 +117,6 @@ class ImagesController extends AppController
             if (count($images) == 0)
                 return $this->response->withStatus(400);
         }
-
         $this->set(compact('images'));
     }
 

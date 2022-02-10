@@ -76,6 +76,14 @@ th {
     right: 0;
 }
 
+textarea {
+    resize: vertical;
+}
+
+.center-item {
+    text-align-last: center;
+}
+
 .fa-red {
     color: red;
 }
