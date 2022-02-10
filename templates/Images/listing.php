@@ -20,21 +20,22 @@ $this->assign('title', 'Images - Listing');
     </thead>
     <tbody>
     <?php
-    //TODO Remplacer les img par des PHP Helper
         foreach ($images as $item)
             echo "<tr>
                     <td>" . $item['name'] . "</td>
                     <td>" . $item['description'] . "</td>
                     <td>" . $item['width'] . "</td>
                     <td>" . $item['height'] . "</td>
-                    <td>" . $this->Html->image("/img/" . $item['name'], ["width" => "200px", "height" => "auto"]) . "</td>
-                    <td><a download=\"/img/" . $item['name'] . "\" href=\"/img/" . $item['name'] . "\" title=\"" . $item['name'] . "\">" .
-                         $this->Html->image("/img/icon_download.png", ["width" => "25px", "height" => "25px"]) . "</a>
+                    <td>" . $this->Html->image("/img/" . $item['name'], ["width" => "250px", "height" => "auto"]) . "</td>
+                    <td>" . $this->Html->link("<i class=\"fa-solid fa-download fa-2x fa-black\"></i>",
+                           "/img/" . $item['name'],
+                           ["escapeTitle" => false, "download" => "/img/" . $item['name']]) . "
                     </td>
                     <td>" . $this->Form->postLink(
-                        "delete",
-                        ["Controller" => "Images", "action" => "delete", $item['id']]) . "
-                    <img alt=\"icon_delete\" src=\"/img/icon/icon_delete.png\" width=20'></td>
+                        "<i class=\"fa-solid fa-trash-can fa-2x fa-red\"></i>",
+                        ["Controller" => "Images", "action" => "delete", $item['id']],
+                        ["escapeTitle" => false]) . "
+                    </td>
                 </tr>";
     ?>
     </tbody>

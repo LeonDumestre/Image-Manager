@@ -76,6 +76,14 @@ th {
     right: 0;
 }
 
+.fa-red {
+    color: red;
+}
+
+.fa-black {
+    color: black;
+}
+
 /* Nav bar */
 .top-nav {
     display: flex;

@@ -22,6 +22,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://kit.fontawesome.com/168132daad.js" crossorigin="anonymous"></script>
     <title>
         <?= $this->fetch('title') ?>
     </title>
