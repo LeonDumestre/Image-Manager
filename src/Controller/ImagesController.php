@@ -54,19 +54,24 @@ class ImagesController extends AppController
         if (!empty($data)) {
 
             $fileData = $data["File"];
-            $image->name = $data["Name"] . ".jpg";
-            $image->description = $data["Description"];
 
-            $fileData->moveTo(WWW_ROOT . "img/" . $image->name);
+            if(count($this->Images->find()->where(['Name LIKE' => $data['Name'].'.jpg'])->toArray()) > 0)
+                $this->Flash->error('Ce nom est déjà utilisé !');
+            else {
+                $image->name = $data["Name"] . ".jpg";
+                $image->description = $data["Description"];
 
-            $imageSize = getimagesize(WWW_ROOT . "img/" . $image->name);
-            $image->width = $imageSize[0];
-            $image->height = $imageSize[1];
+                $fileData->moveTo(WWW_ROOT . "img/" . $image->name);
 
-            if ($this->Images->save($image)) {
-                $this->Flash->success("L'image a été ajoutée avec succès !");
-            } else {
-                $this->Flash->error("Mince ! L'image n'a pas pu être ajoutée...");
+                $imageSize = getimagesize(WWW_ROOT . "img/" . $image->name);
+                $image->width = $imageSize[0];
+                $image->height = $imageSize[1];
+
+                if ($this->Images->save($image)) {
+                    $this->Flash->success("L'image a été ajoutée avec succès !");
+                    return $this->redirect(['controller' => 'Images', 'action' => 'listing']);
+                } else
+                    $this->Flash->error("Mince ! L'image n'a pas pu être ajoutée...");
             }
         }
     }
@@ -86,36 +91,33 @@ class ImagesController extends AppController
     }
 
 
-    //TODO pagination à faire
     public function listing($args = null)
     {
         $this->addAll();
         $request = $this->getRequest()->getQuery();
 
-        if ($args == null) {
+        $limit = 10;
+        if (isset($request["limit"]) && $request["limit"] < $limit)
+            $limit = $request["limit"];
 
-            $limit = 20;
-            if (isset($request["limit"]) && $request["limit"] < $limit)
-                $limit = $request["limit"];
+        $name = "%";
+        if (isset($request["name"]))
+            $name = "%" . $request["name"] . "%";
+        else if ($args != null)
+            $name = $args;
 
-            $name = "";
-            if (isset($request["name"]))
-                $name = $request["name"];
+        $images = $this->Images
+            ->find()
+            ->where(['name LIKE' => $name])
+            ->limit($limit)
+            ->order(['name' => 'ASC'])
+            ->toArray();
 
-            $images = $this->Images
-                ->find()
-                ->where(['name LIKE' => "%$name%"])
-                ->limit($limit)
-                ->order(['name' => 'ASC'])
-                ->toArray();
-        } else {
-                $images = $this->Images
-                    ->find()
-                    ->where(['name LIKE' => $args . ".jpg"])
-                    ->toArray();
-            if (count($images) == 0)
-                return $this->response->withStatus(400);
-        }
+        if (count($images) == 0)
+            return $this->response->withStatus(400);
+
+        //TODO Pagination à faire ici
+
         $this->set(compact('images'));
     }
 
