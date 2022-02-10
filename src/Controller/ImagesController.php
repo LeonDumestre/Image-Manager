@@ -50,16 +50,16 @@ class ImagesController extends AppController
         $image = $this->Images->newEmptyEntity();
         $this->set(compact('image'));
 
-        if (!empty($this->getRequest()->getData())) {
-            $data = $this->getRequest()->getData();
+        $data = $this->getRequest()->getData();
+        if (!empty($data)) {
 
             $fileData = $data["File"];
-            $fileData->moveTo(WWW_ROOT . "img/" . $fileData->getClientFileName());
-
-            $image->name = $fileData->getClientFileName();
+            $image->name = $data["Name"] . ".jpg";
             $image->description = $data["Description"];
 
-            $imageSize = getimagesize(WWW_ROOT . "img/" . $fileData->getClientFileName());
+            $fileData->moveTo(WWW_ROOT . "img/" . $image->name);
+
+            $imageSize = getimagesize(WWW_ROOT . "img/" . $image->name);
             $image->width = $imageSize[0];
             $image->height = $imageSize[1];
 
@@ -69,7 +69,6 @@ class ImagesController extends AppController
                 $this->Flash->error("Mince ! L'image n'a pas pu être ajoutée...");
             }
         }
-
     }
 
 
