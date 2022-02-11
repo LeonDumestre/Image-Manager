@@ -4,7 +4,8 @@ $this->assign('title', 'Liste des images');
 
 /** @var array $images */
 /** @var int $page */
-
+/** @var int $maxPage */
+/** @var int $limit */
 
  echo $this->Html->link(
     "Ajouter une image",
@@ -49,7 +50,23 @@ $this->assign('title', 'Liste des images');
 </table>
 
 <?php
-$page = 1;
-    if ($page > 1) echo "<a class='button'>Page précédente</a>";
-    if ($page <= 1) echo "<a class='button next-button'>Page suivante</a>";
+    if ($page > 1) {
+        if ($page-1 == 1) {
+            if ($limit == 10)
+                echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing'], ['class' => 'button']);
+            else
+                echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing', '?' => ['limit' => $limit]], ['class' => 'button']);
+        } else {
+            if ($limit == 10)
+                echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing', '?' => ['page' => $page - 1]], ['class' => 'button']);
+            else
+                echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing', '?' => ['limit' => $limit, 'page' => $page - 1]], ['class' => 'button']);
+        }
+    }
+    if ($page < $maxPage) {
+        if ($limit == 10)
+            echo $this->Html->link('Page suivante', ["controller" => 'Images', 'action' => 'listing', '?' => ['page' => $page + 1]], ['class' => 'button next-button']);
+        else
+            echo $this->Html->link('Page suivante', ["controller" => 'Images', 'action' => 'listing', '?' => ['limit' => $limit, 'page' => $page + 1]], ['class' => 'button next-button']);
+    }
 ?>

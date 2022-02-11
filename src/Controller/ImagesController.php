@@ -96,6 +96,10 @@ class ImagesController extends AppController
         $this->addAll();
         $request = $this->getRequest()->getQuery();
 
+        $page = 1;
+        if (isset($request["page"]))
+            $page = $request["page"];
+
         $limit = 10;
         if (isset($request["limit"]) && $request["limit"] < $limit)
             $limit = $request["limit"];
@@ -110,15 +114,21 @@ class ImagesController extends AppController
             ->find()
             ->where(['name LIKE' => $name])
             ->limit($limit)
+            ->offset(($page-1)*$limit)
             ->order(['name' => 'ASC'])
             ->toArray();
 
         if (count($images) == 0)
             return $this->response->withStatus(400);
 
-        //TODO Pagination à faire ici
+        $allImages = $this->Images->find()->toArray();
+        if ($limit != 0)
+            $maxPage = count($allImages) / $limit;
 
         $this->set(compact('images'));
+        $this->set(compact('limit'));
+        $this->set(compact('page'));
+        $this->set(compact('maxPage'));
     }
 
 }
