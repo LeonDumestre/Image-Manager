@@ -52,7 +52,6 @@ class ImagesController extends AppController
 
         $data = $this->getRequest()->getData();
         if (!empty($data)) {
-
             $fileData = $data["File"];
 
             if(count($this->Images->find()->where(['Name LIKE' => $data['Name'].'.jpg'])->toArray()) > 0)
@@ -104,11 +103,14 @@ class ImagesController extends AppController
         if (isset($request["limit"]) && $request["limit"] < $limit)
             $limit = $request["limit"];
 
+        $info = false;
         $name = "%";
         if (isset($request["name"]))
             $name = "%" . $request["name"] . "%";
-        else if ($args != null)
+        else if ($args != null) {
             $name = $args;
+            $info = true;
+        }
 
         $images = $this->Images
             ->find()
@@ -129,6 +131,7 @@ class ImagesController extends AppController
         $this->set(compact('limit'));
         $this->set(compact('page'));
         $this->set(compact('maxPage'));
+        $this->set(compact('info'));
     }
 
 }
