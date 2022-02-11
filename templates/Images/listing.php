@@ -52,19 +52,19 @@ $this->assign('title', 'Liste des images');
 <?php
     if ($page > 1) {
         if ($page-1 == 1) {
-            if ($limit == 10)
+            if ($limit == 12)
                 echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing'], ['class' => 'button']);
             else
                 echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing', '?' => ['limit' => $limit]], ['class' => 'button']);
         } else {
-            if ($limit == 10)
+            if ($limit == 12)
                 echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing', '?' => ['page' => $page - 1]], ['class' => 'button']);
             else
                 echo $this->Html->link('Page précédente', ["controller" => 'Images', 'action' => 'listing', '?' => ['limit' => $limit, 'page' => $page - 1]], ['class' => 'button']);
         }
     }
     if ($page < $maxPage) {
-        if ($limit == 10)
+        if ($limit == 12)
             echo $this->Html->link('Page suivante', ["controller" => 'Images', 'action' => 'listing', '?' => ['page' => $page + 1]], ['class' => 'button next-button']);
         else
             echo $this->Html->link('Page suivante', ["controller" => 'Images', 'action' => 'listing', '?' => ['limit' => $limit, 'page' => $page + 1]], ['class' => 'button next-button']);

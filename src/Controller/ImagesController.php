@@ -100,7 +100,7 @@ class ImagesController extends AppController
         if (isset($request["page"]))
             $page = $request["page"];
 
-        $limit = 10;
+        $limit = 12;
         if (isset($request["limit"]) && $request["limit"] < $limit)
             $limit = $request["limit"];
 
