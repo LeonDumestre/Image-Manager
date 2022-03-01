@@ -51,7 +51,8 @@ return static function (RouteBuilder $routes) {
          * to use (in this case, templates/Pages/listing.php)...
          */
         $builder->connect('/', ['controller' => 'Images', 'action' => 'listing']);
-        $builder->connect('/api/*', 'Images::listing');
+        $builder->connect('/api/*', 'Images::api');
+        $builder->connect('/view/*', 'Images::view');
 
         /*
          * ...and connect the rest of 'Pages' controller's URLs.

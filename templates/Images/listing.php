@@ -1,5 +1,6 @@
 <?php
 
+$this->assign('connect', $this->Html->link("Se connecter", ["controller" => 'Users', 'action' => 'connect'], ['class' => 'button']));
 $this->assign('title', 'Liste des images');
 
 /** @var array $images */
@@ -9,11 +10,10 @@ $this->assign('title', 'Liste des images');
 /** @var int $info */
 /** @var \Cake\ORM\Entity $comment */
 
-if (!$info)
-     echo $this->Html->link(
-        "Ajouter une image",
-        ["Controller" => "Images", "action" => "add"],
-        ["escapeTitle" => false, "class" => "button"]);
+ echo $this->Html->link(
+    "Ajouter une image",
+    ["controller" => "Images", "action" => "add"],
+    ["escapeTitle" => false, "class" => "button"]);
 ?>
 
 <table>
@@ -44,7 +44,7 @@ if (!$info)
                     <td>" .
                 $this->Html->link(
                     $this->Html->image("/img/" . $item['name'], ["alt" => $item['name'], "width" => "250px", "height" => "auto"]),
-                        ["Controller" => "Images", "action" => "listing", $item['name']],
+                        ["controller" => "Images", "action" => "view", $item['name']],
                         ["escapeTitle" => false]) .
                     "</td>
 
@@ -64,30 +64,6 @@ if (!$info)
     ?>
     </tbody>
 </table>
-<?php
-    if ($info) {
-        echo "<table>
-            <thead>
-                <tr><th colspan=\"2\">Commentaires</th></tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Bonjour je trouve cette image magnifique !</td>
-                    <td>06/02/2022</td>
-                </tr>
-                <tr>
-                    <td>Wow très impressionnant</td>
-                    <td>22/01/2022</td>
-                </tr>
-            </tbody>
-        </table>";
-
-        echo $this->Form->create();
-        echo $this->Form->control("", ["type" => "textarea", "maxlength" => 500]);
-        echo $this->Form->button("Ajouter le commentaire");
-        echo $this->Form->end();
-    }
-?>
 
 <?php
     if ($page > 1) {

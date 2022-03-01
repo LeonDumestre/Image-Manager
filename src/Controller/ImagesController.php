@@ -5,13 +5,56 @@ namespace App\Controller;
 
 class ImagesController extends AppController
 {
-    public function index()
+    public function api($args = null)
     {
-        $dataArray = [];
-        foreach (glob(WWW_ROOT . 'img/*.jpg') as $img) {
-            array_push($dataArray, $img);
+        $this->addAll();
+        $request = $this->getRequest()->getQuery();
+
+        if ($args == null) {
+
+            $page = 1;
+            if (isset($request['page'])) {
+                $page = $request['page'];
+            }
+
+            $limit = 12;
+            if (isset($request['limit']) && $request['limit'] < $limit) {
+                $limit = $request['limit'];
+            }
+
+            $name = '%';
+            if (isset($request['name']))
+                $name = '%' . $request['name'] . '%';
+            elseif ($args != null) {
+                $name = $args;
+            }
+
+            $images = $this->Images
+                ->find()
+                ->where(['name LIKE' => $name])
+                ->limit($limit)
+                ->offset(($page - 1) * $limit)
+                ->order(['name' => 'ASC'])
+                ->toArray();
+
+            if (count($images) == 0) {
+                return $this->response->withStatus(400);
+            }
+        } else {
+            if (is_numeric($args)) {
+                $images = $this->Images
+                    ->find()
+                    ->where(['id =' => $args])
+                    ->first();
+            } else {
+                $images = $this->Images
+                    ->find()
+                    ->where(['name LIKE' => $args])
+                    ->first();
+            }
         }
-         return $this->response->withStringBody(json_encode($dataArray))->withType('application/json');
+
+        return $this->response->withStringBody(json_encode($images, JSON_PRETTY_PRINT))->withType('application/json');
     }
 
     public function addAll()
@@ -87,7 +130,7 @@ class ImagesController extends AppController
         return $this->redirect($this->referer());
     }
 
-    public function listing($args = null)
+    public function listing()
     {
         $this->addAll();
         $request = $this->getRequest()->getQuery();
@@ -106,10 +149,6 @@ class ImagesController extends AppController
         $name = '%';
         if (isset($request['name']))
             $name = '%' . $request['name'] . '%';
-        elseif ($args != null) {
-            $name = $args;
-            $info = true;
-        }
 
         $images = $this->Images
             ->find()
@@ -133,5 +172,32 @@ class ImagesController extends AppController
         $this->set(compact('page'));
         $this->set(compact('maxPage'));
         $this->set(compact('info'));
+    }
+
+    public function view($args = null)
+    {
+        if ($args == null) {
+            return $this->response->withStatus(400);
+        }
+
+        if (is_numeric($args)) {
+            $image = $this->Images
+                ->find()
+                ->contain(['Comments'])
+                ->where(['id =' => $args])
+                ->first();
+        } else {
+            $image = $this->Images
+                ->find()
+                ->contain(['Comments'])
+                ->where(['name LIKE' => $args])
+                ->first();
+        }
+
+        if ($image == null) {
+            return $this->response->withStatus(400);
+        }
+
+        $this->set(compact('image'));
     }
 }

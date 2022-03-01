@@ -1,5 +1,6 @@
 <?php
 
+$this->assign('connect', $this->Html->link("Se connecter", ["controller" => 'Users', 'action' => 'connect'], ['class' => 'button']));
 $this->assign('title', 'Ajout d\'une image');
 
 /** @var \Cake\ORM\Entity $image */
@@ -11,5 +12,3 @@ echo $this->Form->button("Ajouter l'image");
 echo $this->Form->end();
 
 ?>
-
-
