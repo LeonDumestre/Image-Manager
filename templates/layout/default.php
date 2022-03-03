@@ -41,7 +41,43 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <a href="<?= $this->Url->build('/') ?>"><span>Léon</span>DUMESTRE</a>
         </div>
         <div class="top-nav-links">
-            <?= $this->fetch('connect') ?>
+            <?php
+            if ($this->fetch('connect')) {
+                $session = $this->request->getSession();
+                if (!$session->check('Username')) {
+                    echo $this->Html->link(
+                        "Se connecter",
+                        ['controller' => 'Users', 'action' => 'connect'],
+                        ['id' => 'connect', 'class' => 'button']
+                    );
+                } else {
+                    //Le helper ne permet pas de retirer le hrf or je ne veux pas actualiser la page (car menu-déroulant)
+                    echo "<ul class='menu'><li>
+                        <button id='connect' class='button' disabled>" . $session->read('Username') . "</button>
+                        <ul class='sub-menu'><li>";
+                    if ($session->check('Admin') && $session->read('Admin') == 1) {
+                        echo $this->Html->link(
+                            'Utilisateurs',
+                            ['controller' => 'Users', 'action' => 'listing'],
+                            ['class' => 'button']
+                        );
+                        echo "</li><li>";
+                    }
+                    echo $this->Html->link(
+                        'Mes Images',
+                        ['controller' => 'Images', 'action' => 'listing', 'myalbum'],
+                        ['class' => 'button']
+                    );
+                    echo "</li><li>";
+                    echo $this->Html->link(
+                        'Me déconnecter',
+                        ['controller' => 'Users', 'action' => 'disconnect'],
+                        ['class' => 'button']
+                    );
+                    echo "</li></ul></li></ul>";
+                }
+            }
+            ?>
         </div>
     </nav>
     <main class="main">

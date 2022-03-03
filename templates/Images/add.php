@@ -1,6 +1,6 @@
 <?php
 
-$this->assign('connect', $this->Html->link("Se connecter", ["controller" => 'Users', 'action' => 'connect'], ['class' => 'button']));
+$this->assign('connect', true);
 $this->assign('title', 'Ajout d\'une image');
 
 /** @var \Cake\ORM\Entity $image */

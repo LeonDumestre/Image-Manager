@@ -20,4 +20,17 @@ class CommentsController extends AppController
         return $this->redirect($this->referer());
     }
 
+    public function delete($id)
+    {
+        $this->getRequest()->allowMethod('post');
+
+        $comment = $this->Comments->get($id);
+        if ($this->Comments->delete($comment)) {
+            $this->Flash->success("Le commentaire a été supprimée avec succès !");
+        } else {
+            $this->Flash->error("Mince ! Le commentaire n'a pas pu être supprimé...");
+        }
+        return $this->redirect(($this->referer()));
+    }
+
 }
