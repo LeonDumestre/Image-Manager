@@ -1,20 +1,5 @@
 <?php
-/**
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @since         0.10.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
- * @var \App\View\AppView $this
- */
 
-$cakeDescription = 'CakePHP: the rapid development php framework';
 ?>
 
 <!DOCTYPE html>
@@ -44,10 +29,10 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <?php
             if ($this->fetch('connect')) {
                 $session = $this->request->getSession();
-                if (!$session->check('Username')) {
+                if (is_null($this->request->session()->read('Auth.User.pseudo'))) {
                     echo $this->Html->link(
                         "Se connecter",
-                        ['controller' => 'Users', 'action' => 'connect'],
+                        ['controller' => 'Users', 'action' => 'login'],
                         ['id' => 'connect', 'class' => 'button']
                     );
                 } else {
@@ -58,7 +43,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                     if ($session->check('Admin') && $session->read('Admin') == 1) {
                         echo $this->Html->link(
                             'Utilisateurs',
-                            ['controller' => 'Users', 'action' => 'listing'],
+                            ['controller' => 'Users', 'action' => 'view'],
                             ['class' => 'button']
                         );
                         echo "</li><li>";

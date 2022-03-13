@@ -3,97 +3,142 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+/**
+ * Users Controller
+ *
+ * @property \App\Model\Table\UsersTable $Users
+ * @method \App\Model\Entity\User[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ */
 class UsersController extends AppController
 {
-    public function connect()
+    /**
+     * Index method
+     *
+     * @return \Cake\Http\Response|null|void Renders view
+     */
+    public function index()
     {
-        $newUser = $this->getRequest()->getData();
+        $users = $this->paginate($this->Users);
 
-        if (!empty($newUser)) {
-            $userData = $this->Users
-                ->find()
-                ->where(['email LIKE' => $this->getRequest()->getData('email')])
-                ->first();
-
-            if ($userData == null) {
-                $this->Flash->error("Ce compte n'existe pas !");
-            } elseif (!password_verify($newUser['password'], $userData['password'])) {
-                $this->Flash->error("Ce n'est pas le bon mot de passe !");
-            } else {
-                $this->request->getSession()->write([
-                    "Username" => $userData['pseudo'],
-                    "Email" => $userData['email'],
-                    "Id" => $userData['id'],
-                    "Admin" => $userData['admin']
-                ]);
-                $this->Flash->success('Tu as été connecté avec succès !');
-                return $this->redirect(['controller' => 'Images', 'action' => 'listing']);
-            }
-        }
+        $this->set(compact('users'));
     }
 
-    public function disconnect() {
-        $session = $this->request->getSession();
-        $session->destroy();
-        $this->Flash->warning('Tu as été déconnecté avec succès !');
-        return $this->redirect($this->referer());
+    /**
+     * View method
+     *
+     * @param string|null $id User id.
+     * @return \Cake\Http\Response|null|void Renders view
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function view($id = null)
+    {
+        $user = $this->Users->get($id, [
+            'contain' => [],
+        ]);
+
+        $this->set(compact('user'));
     }
 
-    public function register()
+    /**
+     * Add method
+     *
+     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     */
+    public function add()
     {
         $user = $this->Users->newEmptyEntity();
-        $this->set(compact('user'));
-        $data = $this->getRequest()->getData();
+        if ($this->request->is('post')) {
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('The user has been saved.'));
 
-        if (!empty($data)) {
-            $userSimilar = $this->Users
-                ->find()
-                ->where(['email LIKE' => $this->getRequest()->getData('email')])
-                ->first();
-
-            if ($userSimilar !== null) {
-                $this->Flash->success('Cette email est déjà utilisé !');
-            } else {
-                $userEntity = $this->Users->newEntity([
-                    'pseudo' => $data['pseudo'],
-                    'email' => $data['email'],
-                    'password' => password_hash($data['password'], PASSWORD_DEFAULT),
-                ]);
-
-                if ($this->Users->save($userEntity)) {
-                    $this->Flash->success('Ton compte a été créé avec succès !');
-                    return $this->redirect(['controller' => 'Users', 'action' => 'connect']);
-                } else {
-                    $this->Flash->error("Oups ! Ton compte n'a pas pu être créé.");
-                }
+                return $this->redirect(['action' => 'index']);
             }
+            $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
+        $this->set(compact('user'));
     }
 
-    public function listing() {
-        $session = $this->request->getSession();
-        if ($session->read('Id') == 1) {
-            $users = $this->Users
-                ->find()
-                ->toArray();
-            $this->set(compact('users'));
-        } else {
-            return $this->redirect(['controller' => 'Images', 'action' => 'listing']);
-        }
-    }
-
-
-    public function delete($id)
+    /**
+     * Edit method
+     *
+     * @param string|null $id User id.
+     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function edit($id = null)
     {
-        $this->getRequest()->allowMethod('post');
+        $user = $this->Users->get($id, [
+            'contain' => [],
+        ]);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('The user has been saved.'));
 
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+        }
+        $this->set(compact('user'));
+    }
+
+    /**
+     * Delete method
+     *
+     * @param string|null $id User id.
+     * @return \Cake\Http\Response|null|void Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
         if ($this->Users->delete($user)) {
-            $this->Flash->success("L'utilisateur a été supprimée avec succès !");
+            $this->Flash->success(__('The user has been deleted.'));
         } else {
-            $this->Flash->error("Mince ! L'utilisateur n'a pas pu être supprimé...");
+            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
         }
-        return $this->redirect((['controller' => 'Users', 'action' => 'listing']));
+
+        return $this->redirect(['action' => 'index']);
     }
 
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        parent::beforeFilter($event);
+        // Configurez l'action de connexion pour ne pas exiger d'authentification,
+        // évitant ainsi le problème de la boucle de redirection infinie
+        $this->Authentication->addUnauthenticatedActions(['login']);
+    }
+
+    public function login()
+    {
+        $this->request->allowMethod(['get', 'post']);
+        $result = $this->Authentication->getResult();
+        // indépendamment de POST ou GET, rediriger si l'utilisateur est connecté
+        if ($result->isValid()) {
+            // rediriger vers /articles après la connexion réussie
+            $redirect = $this->request->getQuery('redirect', [
+                'controller' => 'Images',
+                'action' => 'listing',
+            ]);
+
+            return $this->redirect($redirect);
+        }
+        // afficher une erreur si l'utilisateur a soumis un formulaire
+        // et que l'authentification a échoué
+        if ($this->request->is('post') && !$result->isValid()) {
+            $this->Flash->error(__('Votre identifiant ou votre mot de passe est incorrect.'));
+        }
+    }
+
+    public function logout()
+    {
+        $result = $this->Authentication->getResult();
+        // indépendamment de POST ou GET, rediriger si l'utilisateur est connecté
+        if ($result->isValid()) {
+            $this->Authentication->logout();
+            return $this->redirect($this->referer());
+        }
+    }
 }

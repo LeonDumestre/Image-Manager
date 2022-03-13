@@ -5,6 +5,15 @@ namespace App\Controller;
 
 class ImagesController extends AppController
 {
+
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        parent::beforeFilter($event);
+        // Configurez l'action de connexion pour ne pas exiger d'authentification,
+        // évitant ainsi le problème de la boucle de redirection infinie
+        $this->Authentication->addUnauthenticatedActions(['api', 'listing', 'view']);
+    }
+
     public function api($args = null)
     {
         $this->addAll();
@@ -58,7 +67,7 @@ class ImagesController extends AppController
     }
 
 
-    public function addAll()
+    /*public function addAll()
     {
         $images = $this->Images
             ->find()
@@ -84,7 +93,7 @@ class ImagesController extends AppController
                 $this->Flash->success('La base de données a été remplie avec succès !');
             }
         }
-    }
+    }*/
 
 
     public function add()
@@ -144,7 +153,7 @@ class ImagesController extends AppController
 
     public function listing($args = null)
     {
-        $this->addAll();
+        //$this->addAll();
         $request = $this->getRequest()->getQuery();
 
         $page = 1;
