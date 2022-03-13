@@ -46,5 +46,3 @@ nbproject/*
 .sass-cache/
 
 /webroot/img/*
-composer.json
-composer.lock
