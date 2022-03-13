@@ -24,13 +24,13 @@ Vous pouvez désormais visiter `http://localhost:8765` pour voir le site.
 
 Je n'ai pas réussi à effectuer la migration de la base de données.
 Le fichier `FirstMigration` est pourtant bien créer dans le dossier `/config/Migrations`.
-Pour pallier à cela, une base de données vide est importer avec le Git.
+Pour pallier à cela, une base de données vide est importée avec le Git.
 
 ## Visuel
 
-Il n'y a actuellement aucune données sur le site.
+Il n'y a actuellement aucune données sur le site donc il est normal que le tableau soit vide.
 
 ## Administration
 
-ATTENTION : Le 1er compte créé sera le seul unique compte administrateur.
+ATTENTION : Le 1er compte créé sera le seul et unique compte administrateur.
             Choississez-le avec soin.
