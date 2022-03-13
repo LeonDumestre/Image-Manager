@@ -34,7 +34,7 @@ $result = $this->fetch('result')
                     <li>
                         <button id='connect' class='button' disabled> <?= $this->Identity->get("pseudo") ?> </button>
                         <ul class='sub-menu'>
-                            <?php if ($this->Identity->get("admin") == 1): ?>
+                            <?php if ($this->Identity->get("id") == 1): ?>
                             <li>
                                 <?= $this->Html->link(
                                     'Utilisateurs',

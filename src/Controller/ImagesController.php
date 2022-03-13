@@ -152,10 +152,6 @@ class ImagesController extends AppController
             ->order(['name' => 'ASC'])
             ->toArray();
 
-            if (count($images) == 0) {
-                return $this->response->withStatus(400);
-            }
-
         $allImages = $this->Images->find()->toArray();
         if ($limit != 0) {
             $maxPage = count($allImages) / $limit;
