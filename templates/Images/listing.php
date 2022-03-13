@@ -93,7 +93,6 @@ if ($connected) {
 </table>
 
 <?php
-//TODO Utiliser Paginator (voir index.php)
 if ($page > 1) {
     if ($page - 1 == 1) {
         if ($limit == 12) {
