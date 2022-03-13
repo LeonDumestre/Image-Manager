@@ -16,7 +16,7 @@ class ImagesController extends AppController
 
     public function api($args = null)
     {
-        $this->addAll();
+        //$this->addAll();
         $request = $this->getRequest()->getQuery();
 
         if ($args == null) {
@@ -111,12 +111,12 @@ class ImagesController extends AppController
                 $image->name = $data['Name'] . '.jpg';
                 $image->description = $data['Description'];
 
-                $session = $this->request->getSession();
-                if ($session->check("Id")) {
-                        $image->author = $session->read("Id");
+                $result = $this->Authentication->getResult();
+                if ($result->isValid()) {
+                        $image->author = $result->getData()["id"];
                 } else {
                     $this->Flash->error("Tu dois te connecter pour ajouter une image !");
-                    return $this->redirect(['controller' => 'Users', 'action' => 'connect']);
+                    return $this->redirect(['controller' => 'Users', 'action' => 'login']);
                 }
 
                 $fileData->moveTo(WWW_ROOT . 'img/' . $image->name);
@@ -146,12 +146,12 @@ class ImagesController extends AppController
         } else {
             $this->Flash->error("Mince ! L'image n'a pas pu être supprimée...");
         }
-
+        //TODO Supprimer l'image
         return $this->redirect((['controller' => 'Images', 'action' => 'listing']));
     }
 
 
-    public function listing($args = null)
+    public function listing()
     {
         //$this->addAll();
         $request = $this->getRequest()->getQuery();
@@ -170,38 +170,17 @@ class ImagesController extends AppController
         if (isset($request['name']))
             $name = '%' . $request['name'] . '%';
 
-        $session = $this->request->getSession();
-        if ($args == null) {
-            $album = false;
-            $images = $this->Images
-                ->find()
-                ->where(['name LIKE' => $name])
-                ->limit($limit)
-                ->offset(($page - 1) * $limit)
-                ->order(['name' => 'ASC'])
-                ->toArray();
+        $images = $this->Images
+            ->find()
+            ->where(['name LIKE' => $name])
+            ->limit($limit)
+            ->offset(($page - 1) * $limit)
+            ->order(['name' => 'ASC'])
+            ->toArray();
 
             if (count($images) == 0) {
                 return $this->response->withStatus(400);
             }
-        } elseif ($args == "myalbum") {
-            if ($session->check('Id')) {
-                $album = true;
-                $images = $this->Images
-                    ->find()
-                    ->where(['author =' => $session->read('Id'), 'name LIKE' => $name])
-                    ->limit($limit)
-                    ->offset(($page - 1) * $limit)
-                    ->order(['name' => 'ASC'])
-                    ->toArray();
-            } else {
-                $session->destroy();
-                $this->Flash->error("Mince ! Il y a un problème, reconnecte toi.");
-                return $this->redirect(['controller' => 'Users', 'action' => 'connect']);
-            }
-        } else {
-            return $this->redirect(['controller' => 'Images', 'action' => 'listing']);
-        }
 
         $allImages = $this->Images->find()->toArray();
         if ($limit != 0) {
@@ -212,7 +191,6 @@ class ImagesController extends AppController
         $this->set(compact('limit'));
         $this->set(compact('page'));
         $this->set(compact('maxPage'));
-        $this->set(compact('album'));
     }
 
 

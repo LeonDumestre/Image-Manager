@@ -1,5 +1,5 @@
 <?php
-
+$result = $this->fetch('result')
 ?>
 
 <!DOCTYPE html>
@@ -8,12 +8,8 @@
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://kit.fontawesome.com/168132daad.js" crossorigin="anonymous"></script>
-    <title>
-        <?= $this->fetch('title') ?>
-    </title>
+    <title> <?= $this->fetch('title') ?> </title>
     <?= $this->Html->meta('icon') ?>
-
-
     <?= $this->Html->css(['normalize.min', 'milligram.min', 'cake']) ?>
 
     <?= $this->fetch('meta') ?>
@@ -27,42 +23,37 @@
         </div>
         <div class="top-nav-links">
             <?php
-            if ($this->fetch('connect')) {
-                $session = $this->request->getSession();
-                if (is_null($this->request->session()->read('Auth.User.pseudo'))) {
-                    echo $this->Html->link(
-                        "Se connecter",
-                        ['controller' => 'Users', 'action' => 'login'],
-                        ['id' => 'connect', 'class' => 'button']
-                    );
-                } else {
-                    //Le helper ne permet pas de retirer le hrf or je ne veux pas actualiser la page (car menu-déroulant)
-                    echo "<ul class='menu'><li>
-                        <button id='connect' class='button' disabled>" . $session->read('Username') . "</button>
-                        <ul class='sub-menu'><li>";
-                    if ($session->check('Admin') && $session->read('Admin') == 1) {
-                        echo $this->Html->link(
-                            'Utilisateurs',
-                            ['controller' => 'Users', 'action' => 'view'],
-                            ['class' => 'button']
-                        );
-                        echo "</li><li>";
-                    }
-                    echo $this->Html->link(
-                        'Mes Images',
-                        ['controller' => 'Images', 'action' => 'listing', 'myalbum'],
-                        ['class' => 'button']
-                    );
-                    echo "</li><li>";
-                    echo $this->Html->link(
-                        'Me déconnecter',
-                        ['controller' => 'Users', 'action' => 'disconnect'],
-                        ['class' => 'button']
-                    );
-                    echo "</li></ul></li></ul>";
-                }
-            }
-            ?>
+            if (!$this->Identity->isLoggedIn()): ?>
+                <?= $this->Html->link(
+                    "Se connecter",
+                    ['controller' => 'Users', 'action' => 'login'],
+                    ['id' => 'connect', 'class' => 'button']
+                ); ?>
+            <?php else: ?>
+                <ul class='menu'>
+                    <li>
+                        <button id='connect' class='button' disabled> <?= $this->Identity->get("pseudo") ?> </button>
+                        <ul class='sub-menu'>
+                            <?php if ($this->Identity->get("admin") == 1): ?>
+                            <li>
+                                <?= $this->Html->link(
+                                    'Utilisateurs',
+                                    ['controller' => 'Users'],
+                                    ['class' => 'button']
+                                ); ?>
+                            </li>
+                            <?php endif ?>
+                            <li>
+                                <?= $this->Html->link(
+                                    'Me déconnecter',
+                                    ['controller' => 'Users', 'action' => 'logout'],
+                                    ['class' => 'button']
+                                ); ?>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            <?php endif; ?>
         </div>
     </nav>
     <main class="main">
@@ -72,6 +63,7 @@
         </div>
     </main>
     <footer>
+        <?= $this->fetch('footer') ?>
     </footer>
 </body>
 </html>

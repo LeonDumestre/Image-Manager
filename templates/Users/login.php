@@ -8,8 +8,8 @@
         <?= $this->Form->control('email', ['required' => true]) ?>
         <?= $this->Form->control('password', ['required' => true]) ?>
     </fieldset>
-    <?= $this->Form->submit(__('Login')); ?>
+    <?= $this->Form->submit(__('Valider')); ?>
     <?= $this->Form->end() ?>
 
-    <?= $this->Html->link("Ajouter un utilisateur", ['action' => 'add']) ?>
+    <?= $this->Html->link("Je n'ai pas encore de compte ?", ['action' => 'add']) ?>
 </div>

@@ -9,6 +9,6 @@ class CommentsTable extends Table
     public function initialize(array $config): void
     {
         parent::initialize($config);
-        $this->hasOne('Images');
+        $this->belongsTo('Images');
     }
 }

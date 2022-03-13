@@ -1,6 +1,5 @@
 <?php
 
-$this->assign('connect', true);
 $this->assign('title', 'Ajout d\'une image');
 
 /** @var \Cake\ORM\Entity $image */
