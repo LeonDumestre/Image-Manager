@@ -141,12 +141,16 @@ class ImagesController extends AppController
         $this->getRequest()->allowMethod('post');
 
         $image = $this->Images->get($id);
+        if (file_exists(WWW_ROOT . 'img/' . $image['name'])) {
+            unlink(WWW_ROOT . 'img/' . $image['name']);
+        }
+
         if ($this->Images->delete($image)) {
             $this->Flash->success("L'image a été supprimée avec succès !");
         } else {
             $this->Flash->error("Mince ! L'image n'a pas pu être supprimée...");
         }
-        //TODO Supprimer l'image
+
         return $this->redirect((['controller' => 'Images', 'action' => 'listing']));
     }
 
