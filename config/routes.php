@@ -52,7 +52,6 @@ return static function (RouteBuilder $routes) {
          */
         $builder->connect('/', ['controller' => 'Images', 'action' => 'listing']);
         $builder->connect('/api/*', 'Images::api');
-        $builder->connect('/view/*', 'Images::view');
 
         /*
          * ...and connect the rest of 'Pages' controller's URLs.

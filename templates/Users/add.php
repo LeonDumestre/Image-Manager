@@ -5,7 +5,7 @@
  */
 ?>
 <div class="row">
-    <?php if($this->Identity->isLoggedIn() && $this->Identity->get("admin")): ?>
+    <?php if($this->Identity->isLoggedIn() && $this->Identity->get("id") == 1): ?>
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>

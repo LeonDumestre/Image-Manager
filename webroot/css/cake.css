@@ -144,6 +144,11 @@ textarea {
     text-align-last: center;
 }
 
+.center-item i {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
 .fa-red {
     color: red;
 }

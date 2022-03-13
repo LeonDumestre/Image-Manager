@@ -5,27 +5,54 @@
 $this->assign('title', $image['name']);
 
 $admin = false;
-if ($this->Identity->isLoggedIn()) $admin = $this->Identity->get("admin");
+$connected = false;
+if ($this->Identity->isLoggedIn()) {
+    $connected = true;
+    if ($this->Identity->get("id") == 1 || $this->Identity->get("id") == $image['id'])
+        $admin = true;
+}
 ?>
 
 <table>
     <thead>
         <tr>
             <th>Nom</th>
+            <th>Auteur</th>
             <th>Description</th>
-            <th>Largeur</th>
-            <th>Hauteur</th>
+            <th>Dimensions</th>
             <th>Image</th>
-            <th>Télécharger</th>
-            <?php if ($admin) echo "<th>Supprimer</th>"; ?>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         <tr>
             <td> <?= $image['name'] ?> </td>
-            <td> <?= $image['description'] ?> </td>
-            <td> <?= $image['width'] ?> </td>
-            <td> <?= $image['height'] ?> </td>
+            <td> <?php if ($image['user'] != null) echo $image['user']['pseudo'] ?> </td>
+            <td> <?php if ($admin): ?>
+                <div class="no-title">
+                    <?php echo $this->Form->create(
+                        null,
+                        ['url' => ["controller" => "Images", "action" => "updateDescription", $image->id]]
+                    );
+                    echo $this->Form->control(
+                        "description",
+                        ["required" => true, "type" => "textarea", "maxlength" => 500, "value" => $image['description']]
+                    );
+                    echo $this->Form->button('Valider');
+                    echo $this->Form->end(); ?>
+                </div>
+                <?php else:
+                    echo $image['description'];
+                endif; ?>
+            </td>
+            <td class="center-item">
+                <div>
+                    <?= $image['width']; ?>
+                </div>
+                <div>
+                    <?= $image['height']; ?>
+                </div>
+            </td>
             <td>
                 <?= $this->Html->link(
                     $this->Html->image("/img/" . $image['name'], ["alt" => $image['name'], "width" => "250px", "height" => "auto"]),
@@ -33,21 +60,25 @@ if ($this->Identity->isLoggedIn()) $admin = $this->Identity->get("admin");
                     ["escapeTitle" => false]) ?>
             </td>
 
-            <td class='center-item'> <?= $this->Html->link(
-                "<i class=\"fa-solid fa-download fa-2x fa-black\"></i>",
-                "/img/" . $image['name'],
-                ["escapeTitle" => false, "download" => "/img/" . $image['name']]) ?>
-            </td>
-
-            <?php if ($admin): ?>
-                <td class='center-item'>
+            <td class='center-item'>
+                <div>
+                    <?= $this->Html->link(
+                        '<i class="fa-solid fa-download fa-2x fa-black"></i>',
+                        '/img/' . $image['name'],
+                        ['escapeTitle' => false, 'download' => '/img/' . $image['name']]
+                    ); ?>
+                </div>
+                <?php if ($admin): ?>
+                <div>
                     <?= $this->Form->postLink(
-                        "<i class='fa-solid fa-trash-can fa-2x fa-red'></i>",
-                        ['Controller' => 'Images', 'action' => 'delete', $image['id']],
+                        '<i class="fa-solid fa-trash-can fa-2x fa-red"></i>',
+                        ['controller' => 'Images', 'action' => 'delete', $image['id']],
                         ['escapeTitle' => false,
-                            'confirm' => __("Etes-vous sûr de vouloir supprimer l'image {0} ?", $image['name'])]
-                    ) ?>
-                </td>
+                            'confirm' => __("Etes-vous sûr de vouloir supprimer l'image {0} ?", $image['name'])
+                        ]
+                    ); ?>
+                </div>
+            </td>
             <?php endif; ?>
         </tr>
     </tbody>

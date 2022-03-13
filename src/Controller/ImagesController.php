@@ -16,7 +16,6 @@ class ImagesController extends AppController
 
     public function api($args = null)
     {
-        //$this->addAll();
         $request = $this->getRequest()->getQuery();
 
         if ($args == null) {
@@ -41,6 +40,7 @@ class ImagesController extends AppController
             $images = $this->Images
                 ->find()
                 ->where(['name LIKE' => $name])
+                ->contain(['Comments','Users'])
                 ->limit($limit)
                 ->offset(($page - 1) * $limit)
                 ->order(['name' => 'ASC'])
@@ -54,46 +54,19 @@ class ImagesController extends AppController
                 $images = $this->Images
                     ->find()
                     ->where(['id =' => $args])
+                    ->contain(['Comments'])
                     ->first();
             } else {
                 $images = $this->Images
                     ->find()
                     ->where(['name LIKE' => $args])
+                    ->contain(['Comments'])
                     ->first();
             }
         }
 
         return $this->response->withStringBody(json_encode($images, JSON_PRETTY_PRINT))->withType('application/json');
     }
-
-
-    /*public function addAll()
-    {
-        $images = $this->Images
-            ->find()
-            ->all();
-
-        if (count($images) == 0) {
-            foreach (glob(WWW_ROOT . 'img/*.jpg') as $img) {
-                $image = $this->Images->newEmptyEntity();
-                $image->name = exif_read_data($img)['FileName'];
-
-                $description = '';
-                if (isset(exif_read_data($img)['ImageDescription'])) {
-                    $description = exif_read_data($img)['ImageDescription'];
-                }
-                $image->description = $description;
-
-                $image->width = exif_read_data($img)['ExifImageWidth'];
-                $image->height = exif_read_data($img)['ExifImageLength'];
-
-                $this->Images->save($image);
-            }
-            if (count($images) > 0) {
-                $this->Flash->success('La base de données a été remplie avec succès !');
-            }
-        }
-    }*/
 
 
     public function add()
@@ -141,9 +114,6 @@ class ImagesController extends AppController
         $this->getRequest()->allowMethod('post');
 
         $image = $this->Images->get($id);
-        if (file_exists(WWW_ROOT . 'img/' . $image['name'])) {
-            unlink(WWW_ROOT . 'img/' . $image['name']);
-        }
 
         if ($this->Images->delete($image)) {
             $this->Flash->success("L'image a été supprimée avec succès !");
@@ -157,7 +127,6 @@ class ImagesController extends AppController
 
     public function listing()
     {
-        //$this->addAll();
         $request = $this->getRequest()->getQuery();
 
         $page = 1;
@@ -177,6 +146,7 @@ class ImagesController extends AppController
         $images = $this->Images
             ->find()
             ->where(['name LIKE' => $name])
+            ->contain(['Users'])
             ->limit($limit)
             ->offset(($page - 1) * $limit)
             ->order(['name' => 'ASC'])
@@ -207,13 +177,13 @@ class ImagesController extends AppController
         if (is_numeric($args)) {
             $image = $this->Images
                 ->find()
-                ->contain(['Comments'])
+                ->contain(['Comments', 'Users'])
                 ->where(['id =' => $args])
                 ->first();
         } else {
             $image = $this->Images
                 ->find()
-                ->contain(['Comments'])
+                ->contain(['Comments', 'Users'])
                 ->where(['name LIKE' => $args])
                 ->first();
         }
@@ -223,5 +193,19 @@ class ImagesController extends AppController
         }
 
         $this->set(compact('image'));
+    }
+
+    public function updateDescription($id)
+    {
+        $image = $this->Images->get($id);
+        $image['description'] = $this->getRequest()->getData('description');
+
+        if ($this->Images->save($image)) {
+            $this->Flash->success("La description a été modifiée avec succès !");
+        } else {
+            $this->Flash->error("Mince ! La description n'a pas pu être modifiée...");
+        }
+
+        return $this->redirect($this->referer());
     }
 }
